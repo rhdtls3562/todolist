@@ -55,8 +55,8 @@
           }
         });
 
-        // 작업 추가 버튼 클릭 시
-        $("#add").on("click", function () {
+        // 작업 추가 함수
+        function addTask() {
           const task = $("#user").val().trim();
           if (task) {
             // 작업 추가 시 기본적으로 완료되지 않은 상태로 저장
@@ -64,13 +64,13 @@
             tasks.push(newTask); // 배열에 작업 추가
 
             const taskHtml = `
-        <div class="task">
-          <span>${task}</span>
-          <div class="task-buttons">
-            <button class="check">check</button>
-            <button class="delete">delete</button>
-          </div>
-        </div>`;
+      <div class="task">
+        <span>${task}</span>
+        <div class="task-buttons">
+          <button class="check">check</button>
+          <button class="delete">delete</button>
+        </div>
+      </div>`;
 
             $(".taskBoard").append(taskHtml);
 
@@ -78,6 +78,18 @@
             console.log("상태: false"); // 작업 상태가 false (완료되지 않음)
 
             $("#user").val(""); // 입력란 초기화
+          }
+        }
+
+        // 작업 추가 버튼 클릭 시
+        $("#add").on("click", function () {
+          addTask();
+        });
+
+        // 엔터 키를 눌렀을 때 작업 추가
+        $("#user").on("keyup", function (event) {
+          if (event.key === "Enter") {
+            addTask();
           }
         });
 
