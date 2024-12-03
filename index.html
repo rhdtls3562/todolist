@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List with Filters</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200..900&family=Rubik+Bubbles&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="container">
+      <h1>Todolist</h1>
+      <section>
+        <label>오늘 할일</label>
+        <input id="user" />
+        <button id="add">+</button>
+      </section>
+      <section>
+        <ul class="tabs">
+          <li class="active">전체</li>
+          <li>진행중</li>
+          <li>완료</li>
+        </ul>
+        <img class="memo_top" src="img/memo_top.png" />
+        <img class="meno_character" src="img/meno_character.png" />
+        <div class="taskBoard">
+          <!-- 작업 항목이 추가될 곳 -->
+        </div>
+      </section>
+    </div>
+    <script>
+      $(document).ready(function () {
+        let tasks = []; // 작업 목록을 저장할 배열
+
+        // 기본적으로 전체 탭이 활성화되어 있음
+        $(".tabs li").on("click", function () {
+          $(".tabs li").removeClass("active");
+          $(this).addClass("active");
+
+          const filter = $(this).text();
+
+          // 탭 클릭 시 필터링
+          if (filter === "전체") {
+            $(".taskBoard .task").show(); // 모든 작업 보이기
+          } else if (filter === "진행중") {
+            $(".taskBoard .task.completed").hide(); // 완료된 작업 숨기기
+            $(".taskBoard .task").not(".completed").show(); // 진행중 작업만 보이기
+          } else if (filter === "완료") {
+            $(".taskBoard .task.completed").show(); // 완료된 작업만 보이기
+            $(".taskBoard .task").not(".completed").hide(); // 진행중 작업 숨기기
+          }
+        });
+
+        // 작업 추가 버튼 클릭 시
+        $("#add").on("click", function () {
+          const task = $("#user").val().trim();
+          if (task) {
+            // 작업 추가 시 기본적으로 완료되지 않은 상태로 저장
+            const newTask = { text: task, completed: false };
+            tasks.push(newTask); // 배열에 작업 추가
+
+            const taskHtml = `
+        <div class="task">
+          <span>${task}</span>
+          <div class="task-buttons">
+            <button class="check">check</button>
+            <button class="delete">delete</button>
+          </div>
+        </div>`;
+
+            $(".taskBoard").append(taskHtml);
+
+            console.log("입력한 작업: " + task); // 콘솔에 입력한 작업 출력
+            console.log("상태: false"); // 작업 상태가 false (완료되지 않음)
+
+            $("#user").val(""); // 입력란 초기화
+          }
+        });
+
+        // check 버튼 클릭 시
+        $(document).on("click", ".check", function () {
+          const taskDiv = $(this).closest(".task");
+          const taskIndex = $(".task").index(taskDiv);
+
+          // 상태를 토글
+          const isCompleted = taskDiv.hasClass("completed");
+          taskDiv.toggleClass("completed");
+
+          if (isCompleted) {
+            // 완료 -> 진행중 상태로 변경
+            taskDiv.find("span").css("text-decoration", "none"); // 텍스트 줄긋기 제거
+            tasks[taskIndex].completed = false; // 배열에서 상태 업데이트
+          } else {
+            // 진행중 -> 완료 상태로 변경
+            taskDiv.find("span").css("text-decoration", "line-through"); // 텍스트 줄긋기
+            tasks[taskIndex].completed = true; // 배열에서 상태 업데이트
+          }
+
+          console.log(
+            `Task: "${tasks[taskIndex].text}" Completed: ${tasks[taskIndex].completed}`
+          ); // 콘솔에 상태 출력
+        });
+
+        // delete 버튼 클릭 시
+        $(document).on("click", ".delete", function () {
+          const taskDiv = $(this).closest(".task");
+          const taskIndex = $(".task").index(taskDiv);
+
+          // 해당 task 삭제
+          tasks.splice(taskIndex, 1); // 배열에서 삭제
+          taskDiv.remove(); // 화면에서 삭제
+          console.log("작업이 삭제되었습니다.");
+        });
+      });
+    </script>
+  </body>
+</html>
+
+<!--
+
+1. 사용자가 값을 입력함
+2. +버튼을 누르면 할일이 추가된다
+3. check버튼을 누르면 가운데 줄이 생긴다
+
+check버튼을 누르면 할일이 끝나면서 밑줄이 보인다
+1. check버튼을 클릭하는 순간 true, false
+2. true이면 끝난걸로 간주하고 밑줄이 보임
+3. false이면 안끝난걸로 간주하고 그대로(밑줄없음)
+
+
+-->
